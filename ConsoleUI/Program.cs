@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace ConsoleUI
 {
     internal class Program
@@ -28,6 +29,17 @@ namespace ConsoleUI
             #endregion
 
             Text test = new Text("Test", new Vector2(0, 0), true);
+            InputField input = new InputField("Name", new Vector2(1, 10), "Enter your name...");
+
+            input.SetPosition(new Vector2(1, 20));
+
+            Text mousePos = new Text($"({Input.GetMousePosition().x}, {Input.GetMousePosition().y})", new Vector2(30, 0), false);
+            
+            while(true)
+            {
+                mousePos.ChangeText($"{Input.GetMousePosition()}");
+                Thread.Sleep(100);
+            }
 
             Console.ReadLine();
         }

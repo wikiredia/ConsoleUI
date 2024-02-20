@@ -9,17 +9,16 @@ namespace ConsoleUI
 	class Text
 	{
 		/*
-         *      Text
-         * 
-         *      ------
-         *      #Text#
-         *      ------
-         * 
+                 Text            | No Border
+
+                ------
+                #Text#           | Border
+                ------
          */
+
         public string text { get; private set; }
         public Vector2 position { get; private set; }
         public bool hasBorder { get; private set; }
-        string isWrong = "";
 
         public Text(string text, Vector2 position, bool hasBorder=false)
         {
@@ -32,7 +31,7 @@ namespace ConsoleUI
         public void ChangeText(string newText)
         {
             ClearText();
-            text = newText;
+            this.text = newText;
             DrawText();
         }
 
@@ -46,8 +45,10 @@ namespace ConsoleUI
         public void ChangeBorder(bool newBorderStatus)
         {
             hasBorder = newBorderStatus;
+            if(!hasBorder) { ClearBorder(); return; }
             try
             {
+                // Drawing the border around the text here
                 Console.SetCursorPosition(position.x - 1, position.y);
                 Console.Write("#");
                 Console.SetCursorPosition(position.x + text.Length, position.y);
@@ -58,6 +59,7 @@ namespace ConsoleUI
                 for (int i = 0; i < text.Length + 2; i++) { Console.Write("-"); }
             } catch
             {
+                // Need to find a better way to do this
                 Vector2 offset = Vector2.zero;
                 if(position.x-1 < 0)
                 {
@@ -83,13 +85,13 @@ namespace ConsoleUI
 
         public void DrawText()
         {
+            ClearText();
             Console.SetCursorPosition(position.x, position.y);
             Console.Write(text);
-            if (hasBorder) { ClearBorder(); }
             ChangeBorder(hasBorder);
         }
 
-        public void ClearText()
+        private void ClearText()
         {
             if(hasBorder)
             {
@@ -102,9 +104,8 @@ namespace ConsoleUI
             }
         }
 
-        public void ClearBorder()
+        private void ClearBorder()
         {
-            string previousText = text;
             try
             {
                 Console.SetCursorPosition(position.x - 1, position.y);
@@ -120,7 +121,6 @@ namespace ConsoleUI
             {
                 hasBorder = false;
             }
-
         }
 
         public void ChangeColor(ConsoleColor ForegroundColor=ConsoleColor.White, ConsoleColor BackgroundColor=ConsoleColor.Black)
