@@ -5,6 +5,7 @@ using System.Security.Permissions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static ConsoleUI.PositionConsoleWindow;
 
 
 namespace ConsoleUI
@@ -21,6 +22,26 @@ namespace ConsoleUI
             #endregion
 
             #region Console Initialization
+            IntPtr hWnd = PositionConsoleWindow.GetConsoleWindow();
+            var mi = MONITORINFO.Default;
+            GetMonitorInfo(MonitorFromWindow(hWnd, MONITOR_DEFAULTTOPRIMARY), ref mi);
+
+            // Get information about this window's current placement.
+            var wp = WINDOWPLACEMENT.Default;
+            GetWindowPlacement(hWnd, ref wp);
+            int fudgeOffset = 0;
+            wp.NormalPosition = new RECT()
+            {
+                Left = -fudgeOffset,
+                Top = mi.rcWork.Bottom - (wp.NormalPosition.Bottom - wp.NormalPosition.Top),
+                Right = (wp.NormalPosition.Right - wp.NormalPosition.Left),
+                Bottom = fudgeOffset + mi.rcWork.Bottom
+            };
+
+            // Place the window at the new position.
+            SetWindowPlacement(hWnd, ref wp);
+
+
             Console.SetWindowSize(CONSOLE_WIDTH, CONSOLE_HEIGHT);
             Console.SetBufferSize(CONSOLE_WIDTH, CONSOLE_HEIGHT);
 
@@ -34,14 +55,18 @@ namespace ConsoleUI
             input.SetPosition(new Vector2(1, 20));
 
             Text mousePos = new Text($"({Input.GetMousePosition().x}, {Input.GetMousePosition().y})", new Vector2(30, 0), false);
-            
-            while(true)
-            {
-                mousePos.ChangeText($"{Input.GetMousePosition()}");
-                Thread.Sleep(100);
-            }
-
+            Thread TMainLoop = new Thread(new ThreadStart(PrintCursorPosition));
+            TMainLoop.Start();
             Console.ReadLine();
+
+            void PrintCursorPosition()
+            {
+                while (true)
+                {
+                    mousePos.ChangeText($"({Input.GetMousePosition().x}, {Input.GetMousePosition().y})");
+                    Thread.Sleep(100);
+                }
+            }
         }
     }
 }
