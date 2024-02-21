@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static ConsoleUI.PositionConsoleWindow;
+using Microsoft.Win32.SafeHandles;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 
 namespace ConsoleUI
@@ -22,6 +26,22 @@ namespace ConsoleUI
             #endregion
 
             #region Console Initialization
+            // Initialization code for Mouse Input
+            var handle = NativeMethods.GetStdHandle(NativeMethods.STD_INPUT_HANDLE);
+
+            int mode = 0;
+            if (!(NativeMethods.GetConsoleMode(handle, ref mode))) { throw new Win32Exception(); }
+
+            mode |= NativeMethods.ENABLE_MOUSE_INPUT;
+            mode &= ~NativeMethods.ENABLE_QUICK_EDIT_MODE;
+            mode |= NativeMethods.ENABLE_EXTENDED_FLAGS;
+
+            if (!(NativeMethods.SetConsoleMode(handle, mode))) { throw new Win32Exception(); }
+
+            var record = new NativeMethods.INPUT_RECORD();
+            uint recordLen = 0;
+
+            // PositionConsoleWindow.cs & Line 26 - 40 | Credit: https://stackoverflow.com/a/42334329
             IntPtr hWnd = PositionConsoleWindow.GetConsoleWindow();
             var mi = MONITORINFO.Default;
             GetMonitorInfo(MonitorFromWindow(hWnd, MONITOR_DEFAULTTOPRIMARY), ref mi);
@@ -29,11 +49,11 @@ namespace ConsoleUI
             // Get information about this window's current placement.
             var wp = WINDOWPLACEMENT.Default;
             GetWindowPlacement(hWnd, ref wp);
-            int fudgeOffset = 0;
+            int fudgeOffset = -300;
             wp.NormalPosition = new RECT()
             {
                 Left = -fudgeOffset,
-                Top = mi.rcWork.Bottom - (wp.NormalPosition.Bottom - wp.NormalPosition.Top),
+                Top = fudgeOffset+mi.rcWork.Bottom - (wp.NormalPosition.Bottom - wp.NormalPosition.Top),
                 Right = (wp.NormalPosition.Right - wp.NormalPosition.Left),
                 Bottom = fudgeOffset + mi.rcWork.Bottom
             };
@@ -49,22 +69,25 @@ namespace ConsoleUI
             Console.Title = TITLE;
             #endregion
 
-            Text test = new Text("Test", new Vector2(0, 0), true);
-            InputField input = new InputField("Name", new Vector2(1, 10), "Enter your name...");
+            Text test = new Text(TITLE, new Vector2(4, 3), true);
+            InputField firstName = new InputField("First Name", new Vector2(3, 10), "Enter your first name...");
+            InputField lastName = new InputField("Last Name", new Vector2(3, 16), "Enter your last name...");
 
-            input.SetPosition(new Vector2(1, 20));
+            Thread TInputHandler = new Thread(new ThreadStart(InputHandler));
+            TInputHandler.Start();
 
-            Text mousePos = new Text($"({Input.GetMousePosition().x}, {Input.GetMousePosition().y})", new Vector2(30, 0), false);
-            Thread TMainLoop = new Thread(new ThreadStart(PrintCursorPosition));
-            TMainLoop.Start();
-            Console.ReadLine();
-
-            void PrintCursorPosition()
+            while(true)
             {
-                while (true)
-                {
-                    mousePos.ChangeText($"({Input.GetMousePosition().x}, {Input.GetMousePosition().y})");
-                    Thread.Sleep(100);
+                Input.MousePos = new Vector2(record.MouseEvent.dwMousePosition.X, record.MouseEvent.dwMousePosition.Y);
+                Input.MouseButtonState = record.MouseEvent.dwButtonState;
+            }
+
+            void InputHandler()
+            {
+                while (true) {
+                    if (!(NativeMethods.ReadConsoleInput(handle, ref record, 1, ref recordLen))) { throw new Win32Exception(); }
+                    Thread.Sleep(34);
+                    ConsoleItems.MainLoop();
                 }
             }
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleUI
 {
-	class Text
+	class Text : IRenderable
 	{
 		/*
                  Text            | No Border
@@ -22,81 +22,64 @@ namespace ConsoleUI
 
         public Text(string text, Vector2 position, bool hasBorder=false)
         {
-            this.text = text;
-            this.position = position;
             this.hasBorder = hasBorder;
-            DrawText();
+            this.text = this.hasBorder ? $" {text} " : text;
+            this.position = position;
+            ConsoleItems.AllTextItems.Add(this);
+            Render();
         }
 
         public void ChangeText(string newText)
         {
-            ClearText();
+            Clear();
             this.text = newText;
-            DrawText();
+            Render();
         }
 
         public void SetPosition(Vector2 newPosition)
         {
-            ClearText();
+            Clear();
             position = newPosition;
-            DrawText();
+            Render();
         }
 
         public void ChangeBorder(bool newBorderStatus)
         {
-            hasBorder = newBorderStatus;
             if(!hasBorder) { ClearBorder(); return; }
+            // Drawing the border around the text here
             try
             {
-                // Drawing the border around the text here
                 Console.SetCursorPosition(position.x - 1, position.y);
                 Console.Write("#");
+            } catch { }
+            try
+            {
                 Console.SetCursorPosition(position.x + text.Length, position.y);
                 Console.Write("#");
+            } catch { }
+            try
+            {
                 Console.SetCursorPosition(position.x - 1, position.y - 1);
                 for (int i = 0; i < text.Length + 2; i++) { Console.Write("-"); }
+            } catch { }
+            try
+            {
                 Console.SetCursorPosition(position.x - 1, position.y + 1);
                 for (int i = 0; i < text.Length + 2; i++) { Console.Write("-"); }
-            } catch
-            {
-                // Need to find a better way to do this
-                Vector2 offset = Vector2.zero;
-                if(position.x-1 < 0)
-                {
-                    offset.x++;
-                }
-                if(position.x+text.Length > Console.WindowWidth)
-                {
-                    offset.x--;
-                }
-
-                if(position.y-1 < 0)
-                {
-                    offset.y++;
-                }
-                if(position.y+1 > Console.WindowHeight)
-                {
-                    offset.y--;
-                }
-                SetPosition(offset+position);
-            }
-            
+            } catch { }
         }
 
-        public void DrawText()
+        public void Render()
         {
-            ClearText();
+            Clear();
             Console.SetCursorPosition(position.x, position.y);
             Console.Write(text);
             ChangeBorder(hasBorder);
         }
 
-        private void ClearText()
+        public void Clear()
         {
-            if(hasBorder)
-            {
-                ClearBorder();
-            }
+            ClearBorder();
             Console.SetCursorPosition(position.x, position.y);
             for(int i=0;i<text.Length;i++)
             {
@@ -110,24 +93,32 @@ namespace ConsoleUI
             {
                 Console.SetCursorPosition(position.x - 1, position.y);
                 Console.Write(" ");
+            } catch { }
+
+            try
+            {
                 Console.SetCursorPosition(position.x + text.Length, position.y);
                 Console.Write(" ");
+            } catch { }
+
+            try
+            {
                 Console.SetCursorPosition(position.x - 1, position.y - 1);
                 for (int i = 0; i < text.Length + 2; i++) { Console.Write(" "); }
+            } catch { }
+
+            try
+            {
                 Console.SetCursorPosition(position.x - 1, position.y + 1);
                 for (int i = 0; i < text.Length + 2; i++) { Console.Write(" "); }
-            }
-            catch
-            {
-                hasBorder = false;
-            }
+            } catch { }
         }
 
         public void ChangeColor(ConsoleColor ForegroundColor=ConsoleColor.White, ConsoleColor BackgroundColor=ConsoleColor.Black)
         {
             Console.ForegroundColor = ForegroundColor;
             Console.BackgroundColor = BackgroundColor;
-            DrawText();
+            Render();
             Console.ResetColor();
         }
 	}

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleUI
 {
-	class InputField
+	class InputField : IRenderable, IClickable
 	{
 		public string title { get; private set; }
 		public string placeholder { get; private set; }
@@ -17,45 +17,46 @@ namespace ConsoleUI
 			this.title = title;
 			this.placeholder = $" {placeholder} ";
 			this.position = position;
-
-			DrawInputField();
+			ConsoleItems.AllInputFieldItems.Add(this);
+			Render();
 		}
 
-		public void DrawInputField()
+		public void Render()
 		{
-			ClearInputField();
-			//  Type Here...
-			Console.SetCursorPosition(position.x + 1, position.y);
-			Console.ForegroundColor = ConsoleColor.DarkGray;
-			Console.Write(placeholder);
-			Console.ResetColor();
-			
-			// Name
-			//
-			//  Type Here...
-			Console.SetCursorPosition(position.x, position.y-2);
-			Console.Write(title);
+			Clear();			
 
-			// Name
 			// --------------
-			//  Type Here...
+			//  
 			// --------------
 			Console.SetCursorPosition(position.x, position.y-1);
 			for(int i=0;i<placeholder.Length+2;i++) { Console.Write("-"); }
 			Console.SetCursorPosition(position.x, position.y+1);
 			for(int i=0;i<placeholder.Length+2;i++) { Console.Write("-"); }
 
-			// Name
 			// ----------------
-			// # Type Here... #
+			// #              #
 			// ----------------
 			Console.SetCursorPosition(position.x, position.y);
 			Console.Write("#");
 			Console.SetCursorPosition(position.x+placeholder.Length+1, position.y);
 			Console.Write("#");
+
+			// ----------------
+			// # Type Here... #
+			// ----------------
+			Console.SetCursorPosition(position.x + 1, position.y);
+			Console.Write(placeholder);
+
+			// Name
+			// ----------------
+			// # Type Here... #
+			// ----------------
+			Console.BackgroundColor = ConsoleColor.Black;
+			Console.SetCursorPosition(position.x, position.y-2);
+			Console.Write(title);
 		}
 
-		private void ClearInputField()
+		public void Clear()
 		{
 			Console.SetCursorPosition(position.x, position.y);
 			for(int i=0;i<placeholder.Length+2;i++) { Console.Write(" "); }
@@ -67,14 +68,37 @@ namespace ConsoleUI
 			for(int i=0;i<placeholder.Length+2;i++) { Console.Write(" "); }
 			Console.SetCursorPosition(position.x, position.y+1);
 			for(int i=0;i<placeholder.Length+2;i++) { Console.Write(" "); }
-
 		}
 
 		public void SetPosition(Vector2 newPosition)
 		{
-			ClearInputField();
+			Clear();
 			this.position = newPosition;
-			DrawInputField();
+			Render();
+		}
+
+		public bool IsHovering(Vector2 point)
+		{
+			// POINTvsAABB collision check
+			return (point.x >= position.x && point.x <= position.x+placeholder.Length+1 && point.y >= position.y-1 && point.y <= position.y+1);
+		}
+
+		public void ChangeColor(ConsoleColor ForegroundColor=ConsoleColor.White, ConsoleColor BackgroundColor=ConsoleColor.Black)
+		{
+			Console.ForegroundColor = ForegroundColor;
+			Console.BackgroundColor = BackgroundColor;
+			Render();
+		}
+
+		public void OnClick()
+		{
+			ChangeColor(ConsoleColor.White, ConsoleColor.DarkGray);
+			Console.ResetColor();
+		}
+
+		public void UnFocus()
+		{
+			ChangeColor();
 		}
 	}
 }

@@ -43,8 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleItems.cs" />
+    <Compile Include="IClickable.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="InputField.cs" />
+    <Compile Include="IRenderable.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="PositionConsoleWindow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -11,12 +11,15 @@ namespace ConsoleUI
 {
 	public static class Input
     {
-        [DllImport("user32.dll")]
+		[DllImport("user32.dll")]
         static extern bool GetCursorPos(out POINT point);
         [DllImport("user32.dll")]
         public static extern bool GetAsyncKeyState(int button);
 
-        public static bool IsMouseButtonPressed(MouseButton button)
+		public static Vector2 MousePos { get; set; }
+        public static int MouseButtonState { get; set; }
+
+		public static bool IsMouseButtonPressed(MouseButton button)
         {
             return GetAsyncKeyState((int)button);
         }
