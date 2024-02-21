@@ -16,15 +16,20 @@ namespace ConsoleUI
 		{
 			for(int i=0;i<AllInputFieldItems.Count;i++)
 			{
-				if(Input.MouseButtonState==1)
+				if(Input.record.MouseEvent.dwButtonState==1)
 				{
-					if (AllInputFieldItems[i].IsHovering(Input.MousePos))
+					if (AllInputFieldItems[i].IsHovering(new Vector2(Input.record.MouseEvent.dwMousePosition.X, Input.record.MouseEvent.dwMousePosition.Y)))
 					{
 						AllInputFieldItems[i].OnClick();
 					} else
 					{
 						AllInputFieldItems[i].UnFocus();
 					}
+				}
+
+				if(AllInputFieldItems[i]._isFocused && Input.record.KeyEvent.bKeyDown)
+				{
+					AllInputFieldItems[i].ChangeText(Input.record.KeyEvent.UnicodeChar);
 				}
 			}
 		}

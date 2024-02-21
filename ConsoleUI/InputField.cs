@@ -9,8 +9,11 @@ namespace ConsoleUI
 	class InputField : IRenderable, IClickable
 	{
 		public string title { get; private set; }
+		public string text { get; private set; } = "";
 		public string placeholder { get; private set; }
 		public Vector2 position { get; private set; }
+
+		public bool _isFocused { get; private set; } = false;
 
 		public InputField(string title, Vector2 position, string placeholder="Type Here...")
 		{
@@ -51,9 +54,11 @@ namespace ConsoleUI
 			// ----------------
 			// # Type Here... #
 			// ----------------
+			ConsoleColor backup = Console.BackgroundColor;
 			Console.BackgroundColor = ConsoleColor.Black;
 			Console.SetCursorPosition(position.x, position.y-2);
 			Console.Write(title);
+			Console.BackgroundColor = backup;
 		}
 
 		public void Clear()
@@ -93,12 +98,33 @@ namespace ConsoleUI
 		public void OnClick()
 		{
 			ChangeColor(ConsoleColor.White, ConsoleColor.DarkGray);
+			RemovePlaceholderToType();
 			Console.ResetColor();
+			_isFocused = true;
 		}
 
 		public void UnFocus()
 		{
+			_isFocused = false;
 			ChangeColor();
+		}
+
+		private void RemovePlaceholderToType()
+		{
+			Console.SetCursorPosition(position.x + 1, position.y);
+			ConsoleColor backup = Console.BackgroundColor;
+			Console.Write(" ");
+			Console.BackgroundColor = ConsoleColor.White;
+			Console.Write(" ");
+			Console.BackgroundColor = backup;
+			for(int i=0;i<placeholder.Length-3;i++) { Console.Write(" "); }
+		}
+
+		public void ChangeText(char character)
+		{
+			text += character;
+			Console.SetCursorPosition(position.x+1+text.Length, position.y);
+			Console.Write(character);
 		}
 	}
 }

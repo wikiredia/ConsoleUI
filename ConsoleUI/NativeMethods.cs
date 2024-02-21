@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleUI
 {
-	class NativeMethods
+	public class NativeMethods
 	{
         public const Int32 STD_INPUT_HANDLE = -10;
 

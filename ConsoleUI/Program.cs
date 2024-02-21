@@ -19,7 +19,7 @@ namespace ConsoleUI
         static void Main(string[] args)
         {
             #region Basic Info
-            const string TITLE = "Test Window";
+            const string TITLE = "CS50X Hospital!";
 
             const int CONSOLE_WIDTH = 120;
             const int CONSOLE_HEIGHT = 30;
@@ -78,8 +78,7 @@ namespace ConsoleUI
 
             while(true)
             {
-                Input.MousePos = new Vector2(record.MouseEvent.dwMousePosition.X, record.MouseEvent.dwMousePosition.Y);
-                Input.MouseButtonState = record.MouseEvent.dwButtonState;
+                Input.record = record;
             }
 
             void InputHandler()

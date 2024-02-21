@@ -16,8 +16,7 @@ namespace ConsoleUI
         [DllImport("user32.dll")]
         public static extern bool GetAsyncKeyState(int button);
 
-		public static Vector2 MousePos { get; set; }
-        public static int MouseButtonState { get; set; }
+        public static NativeMethods.INPUT_RECORD record;
 
 		public static bool IsMouseButtonPressed(MouseButton button)
         {
