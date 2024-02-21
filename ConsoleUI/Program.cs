@@ -69,9 +69,9 @@ namespace ConsoleUI
             Console.Title = TITLE;
             #endregion
 
-            Text test = new Text(TITLE, new Vector2(4, 3), true);
-            InputField firstName = new InputField("First Name", new Vector2(3, 10), "Enter your first name...");
-            InputField lastName = new InputField("Last Name", new Vector2(3, 16), "Enter your last name...");
+            Text test = new Text(TITLE, new Vector2(CONSOLE_WIDTH/2-TITLE.Length/2, 2), true);
+            InputField firstName = new InputField("         First Name", new Vector2(CONSOLE_WIDTH/2-"Enter your first name...".Length/2, 10), "Enter your first name...");
+            InputField lastName = new InputField("         Last Name", new Vector2(CONSOLE_WIDTH/2-"Enter your last name...".Length/2-1, 15), "Enter your last name...");
 
             Thread TInputHandler = new Thread(new ThreadStart(InputHandler));
             TInputHandler.Start();
