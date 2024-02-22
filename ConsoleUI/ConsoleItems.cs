@@ -48,9 +48,11 @@ namespace ConsoleUI
 					} else if(Input.record.KeyEvent.wVirtualKeyCode == 8)
 					{
                         // Backspace
-
-                        AllInputFieldItems[i].text = AllInputFieldItems[i].text.Remove(AllInputFieldItems[i].text.Length - 1, 1);
-						AllInputFieldItems[i].ChangeText();
+						try
+						{
+							AllInputFieldItems[i].text = AllInputFieldItems[i].text.Remove(AllInputFieldItems[i].text.Length - 1, 1);
+							AllInputFieldItems[i].ChangeText();
+						} catch { }
                     }
                 }
 			}

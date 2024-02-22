@@ -10,7 +10,7 @@ namespace ConsoleUI
 	class InputField : IRenderable, IClickable
 	{
 		public string title { get; private set; }
-		public string text { get; set; } = "";
+		public string text { get; set; }
 		public string placeholder { get; private set; }
 		public Vector2 position { get; private set; }
 
@@ -82,8 +82,14 @@ namespace ConsoleUI
 			// ----------------
 			// # Type Here... #
 			// ----------------
-			Console.SetCursorPosition(position.x + 1, position.y);
-			Console.Write(placeholder);
+			Console.SetCursorPosition(text=="" ? position.x + 1 : position.x + 2, position.y);
+			if(text != "")
+			{
+				Console.Write(text);
+			} else
+			{
+				Console.Write(placeholder);
+			}
 
 			// Name
 			// ----------------
@@ -161,6 +167,7 @@ namespace ConsoleUI
 
 		public void ChangeText(char character)
 		{
+			foregroundcolor = ConsoleColor.White;
 			text += character;
 			Console.SetCursorPosition(position.x+1+text.Length, position.y);
 			Console.Write(character);
