@@ -27,10 +27,32 @@ namespace ConsoleUI
 					}
 				}
 
-				if(AllInputFieldItems[i]._isFocused && Input.record.KeyEvent.bKeyDown)
+                if (AllInputFieldItems[i].IsHovering(new Vector2(Input.record.MouseEvent.dwMousePosition.X, Input.record.MouseEvent.dwMousePosition.Y)))
 				{
-					AllInputFieldItems[i].ChangeText(Input.record.KeyEvent.UnicodeChar);
+					AllInputFieldItems[i].OnHover();
+				} else
+				{
+					AllInputFieldItems[i].OnUnHover();
 				}
+
+
+                if (AllInputFieldItems[i]._isFocused && Input.record.KeyEvent.bKeyDown)
+				{
+					if(Input.record.KeyEvent.wVirtualKeyCode >= 65 && Input.record.KeyEvent.wVirtualKeyCode <= 90)
+					{
+						AllInputFieldItems[i].ChangeText(Input.record.KeyEvent.UnicodeChar);
+					} else if(Input.record.KeyEvent.wVirtualKeyCode == 32)
+					{
+						// Space
+						AllInputFieldItems[i].ChangeText(' ');
+					} else if(Input.record.KeyEvent.wVirtualKeyCode == 8)
+					{
+                        // Backspace
+
+                        AllInputFieldItems[i].text = AllInputFieldItems[i].text.Remove(AllInputFieldItems[i].text.Length - 1, 1);
+						AllInputFieldItems[i].ChangeText();
+                    }
+                }
 			}
 		}
 	}

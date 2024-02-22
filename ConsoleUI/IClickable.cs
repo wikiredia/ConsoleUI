@@ -11,5 +11,7 @@ namespace ConsoleUI
 		bool IsHovering(Vector2 point);
 		void OnClick();
 		void UnFocus();
+		void OnHover();
+		void OnUnHover();
 	}
 }
