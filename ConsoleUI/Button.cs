@@ -14,7 +14,12 @@ namespace ConsoleUI
 
         }
 
-        public void IsHovering(Vector2 point)
+        public bool IsHovering(Vector2 point)
+        {
+            return false;
+        }
+
+        public void UnFocus()
         {
 
         }
