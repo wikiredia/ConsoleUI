@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,7 +42,13 @@ namespace ConsoleUI
 					}
 				}
 
-				if(AllClickableItems.Count<i) { return; }
+				try
+				{
+					AllClickableItems[i].GetHashCode(); // Executing random command to check if Item is accessible
+				} catch
+				{
+					return;
+				}
 
 				if (AllClickableItems[i].IsHovering(new Vector2(Input.record.MouseEvent.dwMousePosition.X, Input.record.MouseEvent.dwMousePosition.Y)))
 				{

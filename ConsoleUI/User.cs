@@ -33,6 +33,16 @@ namespace ConsoleUI
 			}
 		}
 
+		private double _balance { get; set; }
+		public double Balance
+		{
+			get
+			{
+				return _balance;
+			}
+		}
+
+
 		public User(string firstname, string lastname, string username, string password)
 		{
 			FirstName = firstname;
@@ -43,21 +53,21 @@ namespace ConsoleUI
 			RegisteredUsers.Add(this);
 		}
 
-		public static bool TestPassword(string username, string passwordAttempt)
-		{
-			if(!Exists(username)) { return false; }
-			return Get(username).Password == passwordAttempt;
-		}
 
-		public static User Get(string username)
+		public static User Get(string username, string password)
 		{
+            if (!Exists(username)) { return null; }
+
 			User necessaryUser = null;
 
-			for(int i=0;i<RegisteredUsers.Count;i++)
+            for (int i=0;i<RegisteredUsers.Count;i++)
 			{
-				if(RegisteredUsers[i].Username == username)
+				if(RegisteredUsers[i].Username.ToLower() == username.ToLower())
 				{
-					necessaryUser = RegisteredUsers[i];
+					if (RegisteredUsers[i].Password == password)
+					{
+						necessaryUser = RegisteredUsers[i];
+					}
 				}
 			}
 			
@@ -65,7 +75,16 @@ namespace ConsoleUI
 		}
 		public static bool Exists(string username)
 		{
-			return Get(username) != null;
+			bool exists = false;
+
+			for(int i=0;i<RegisteredUsers.Count;i++)
+			{
+				if(username.ToLower() == RegisteredUsers[i].Username.ToLower())
+				{
+					exists = true;
+				}
+			}
+			return exists;
 		}
 
 		public static void Save()
@@ -80,7 +99,7 @@ namespace ConsoleUI
 
 		public static void LoadData()
 		{
-			if(File.ReadAllText(fileName) == "")
+			if(!File.Exists(fileName) || File.ReadAllText(fileName) == "")
 			{
 				File.WriteAllText(fileName, "[]");
 			}

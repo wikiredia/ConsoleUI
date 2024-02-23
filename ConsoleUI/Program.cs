@@ -70,9 +70,10 @@ namespace ConsoleUI
             #endregion
 
             User.LoadData();
-            ImportantFunctions.LoginScreen();
-
-
+            // ImportantFunctions.LoginScreen();
+            User root = new User("Reda", "Kadi", "root", "toor");
+            root.BirthDate = new DateTime(2007, 7, 2);
+            ImportantFunctions.HomeScreen(root);
 			#region Thread Instances
 			Thread TInputHandler = new Thread(new ThreadStart(InputHandler));
             TInputHandler.Start();

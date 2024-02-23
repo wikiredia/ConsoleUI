@@ -71,6 +71,7 @@ namespace ConsoleUI
 
         private void ClearBorder()
         {
+            if(!hasBorder) { return; }
             try
             {
                 Console.SetCursorPosition(position.x - 1, position.y);

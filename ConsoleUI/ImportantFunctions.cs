@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace ConsoleUI
 			ConsoleItems.AllTextItems.Clear();
 			ConsoleItems.AllInputFieldItems.Clear();
 			ConsoleItems.AllButtonItems.Clear();
-
+			ConsoleItems.AllClickableItems.Clear();
 			ConsoleItems.MainLoop();
 		}
 
@@ -41,17 +42,16 @@ namespace ConsoleUI
 			Button signupBtn = new Button("Sign Up", new Vector2(63, 18));
 			signupBtn.OnClickEvent += ImportantFunctions.SignUp;
 
-
-
 			void SignIn()
 			{
 				debugMessage = "";
 
-				if(User.TestPassword(usernameField.text, passwordField.text))
+				if(User.Get(usernameField.text, passwordField.text) != null)
 				{
-					debugTxt.ChangeText($"Succesful login, welcome {User.Get(usernameField.text).FirstName}!");
+					User loggedInUser = User.Get(usernameField.text, passwordField.text);
+					debugTxt.ChangeText($"Succesful login, welcome {loggedInUser.FirstName}!");
 					Thread.Sleep(1000);
-					HomeScreen(User.Get(usernameField.text));
+					HomeScreen(loggedInUser);
 				} else
 				{
 					debugTxt.ChangeText("Username or Password Incorrect");
@@ -149,7 +149,35 @@ namespace ConsoleUI
 		{
 			InstantiateNewWindow();
 
-			Text titleTxt = new Text($" Welcome, {user.FirstName}! ", Vector2.one, true);
-		}
+			Text titleTxt = new Text($" Welcome, {user.FirstName}! ", new Vector2(2, 1), true);
+
+			Text balanceTxt = new Text($"Balance: {user.Balance:C2}", new Vector2(1, 4));
+			balanceTxt.ChangeColor(user.Balance >= 0 ? ConsoleColor.Green : ConsoleColor.Red);
+
+			Button accountSettingsBtn = new Button("Account Settings", new Vector2(100, 1));
+			accountSettingsBtn.OnClickEvent += (bsender, args) => { AccountSettings(); };
+
+			Button depositBtn = new Button("Deposit", new Vector2(1, 10));
+			depositBtn.ChangeColor(ConsoleColor.Green);
+
+			Button withdrawBtn = new Button("Withdraw", new Vector2(14, 10));
+			withdrawBtn.ChangeColor(ConsoleColor.Red);
+
+			void AccountSettings()
+			{
+				InstantiateNewWindow();
+                Text accountSettingsTitleTxt = new Text($" Account Settings ", new Vector2(2, 1), true);
+
+				Text firstNameTxt = new Text($"First name: {user.FirstName}", new Vector2(1, 4));
+				Text lastNameTxt = new Text($"Last name: {user.LastName}", new Vector2(1, 5));
+				Text usernameTxt = new Text($"Username: {user.Username}", new Vector2(1, 7));
+				Text passwordTxt = new Text($"Password: {user.Password}", new Vector2(1, 8));
+				Text birthdayTxt = new Text($"Birthday: {user.BirthDate.ToString("dd-MM-yyyy")} | Age: {user.Age}", new Vector2(1, 10));
+
+                Button backBtn = new Button("Back Home", new Vector2(107, 1));
+                backBtn.OnClickEvent += (bsender, args) => { HomeScreen(user); };
+
+            }
+        }
 	}
 }
