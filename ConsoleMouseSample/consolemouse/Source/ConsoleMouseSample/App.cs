@@ -26,6 +26,7 @@ namespace ConsoleMouseSample {
                 if (!(NativeMethods.ReadConsoleInput(handle, ref record, 1, ref recordLen))) { throw new Win32Exception(); }
                 Console.SetCursorPosition(0, 0);
                 switch (record.EventType) {
+                    
                     case NativeMethods.MOUSE_EVENT: {
                             Console.WriteLine("Mouse event");
                             Console.WriteLine(string.Format("    X ...............:   {0,4:0}  ", record.MouseEvent.dwMousePosition.X));

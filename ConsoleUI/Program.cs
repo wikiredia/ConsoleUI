@@ -19,7 +19,7 @@ namespace ConsoleUI
         static void Main(string[] args)
         {
             #region Basic Info
-            const string TITLE = "CS50X Hospital!";
+            const string TITLE = "CS50X Hospital";
 
             const int CONSOLE_WIDTH = 120;
             const int CONSOLE_HEIGHT = 30;
@@ -69,26 +69,31 @@ namespace ConsoleUI
             Console.Title = TITLE;
             #endregion
 
-            Text test = new Text(TITLE, new Vector2(CONSOLE_WIDTH/2-TITLE.Length/2, 2), true);
-            InputField firstName = new InputField("         First Name", new Vector2(CONSOLE_WIDTH/2-"Enter your first name...".Length/2, 10), "Enter your first name...");
-            InputField lastName = new InputField("         Last Name", new Vector2(CONSOLE_WIDTH/2-"Enter your last name...".Length/2-1, 15), "Enter your last name...");
+            User.LoadData();
+            ImportantFunctions.LoginScreen();
 
-            Thread TInputHandler = new Thread(new ThreadStart(InputHandler));
+
+			#region Thread Instances
+			Thread TInputHandler = new Thread(new ThreadStart(InputHandler));
             TInputHandler.Start();
+            #endregion
 
-            while(true)
+			#region Loops
+			while(true)
             {
                 Input.record = record;
             }
-
-            void InputHandler()
+			#region Thread Functions
+			void InputHandler()
             {
                 while (true) {
                     if (!(NativeMethods.ReadConsoleInput(handle, ref record, 1, ref recordLen))) { throw new Win32Exception(); }
-                    Thread.Sleep(34);
+                    Thread.Sleep(16);
                     ConsoleItems.MainLoop();
                 }
             }
+            #endregion
+            #endregion
         }
     }
 }

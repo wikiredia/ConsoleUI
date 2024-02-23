@@ -23,7 +23,7 @@ namespace ConsoleUI
         public Text(string text, Vector2 position, bool hasBorder=false)
         {
             this.hasBorder = hasBorder;
-            this.text = this.hasBorder ? $" {text} " : text;
+            this.text = text;
             this.position = position;
             ConsoleItems.AllTextItems.Add(this);
             Render();
@@ -69,24 +69,6 @@ namespace ConsoleUI
             } catch { }
         }
 
-        public void Render()
-        {
-            Clear();
-            Console.SetCursorPosition(position.x, position.y);
-            Console.Write(text);
-            ChangeBorder(hasBorder);
-        }
-
-        public void Clear()
-        {
-            ClearBorder();
-            Console.SetCursorPosition(position.x, position.y);
-            for(int i=0;i<text.Length;i++)
-            {
-                Console.Write(" ");
-            }
-        }
-
         private void ClearBorder()
         {
             try
@@ -120,6 +102,24 @@ namespace ConsoleUI
             Console.BackgroundColor = BackgroundColor;
             Render();
             Console.ResetColor();
+        }
+
+        // IRenderable
+        public void Clear()
+        {
+            ClearBorder();
+            Console.SetCursorPosition(position.x, position.y);
+            for(int i=0;i<text.Length;i++)
+            {
+                Console.Write(" ");
+            }
+        }
+        public void Render()
+        {
+            Clear();
+            Console.SetCursorPosition(position.x, position.y);
+            Console.Write(text);
+            ChangeBorder(hasBorder);
         }
 	}
 }
