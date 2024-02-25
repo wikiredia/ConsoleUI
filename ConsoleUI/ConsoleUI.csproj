@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BankAccount.cs" />
     <Compile Include="Button.cs" />
     <Compile Include="ImportantFunctions.cs" />
     <Compile Include="ConsoleItems.cs" />

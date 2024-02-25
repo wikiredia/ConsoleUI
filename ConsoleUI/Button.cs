@@ -56,19 +56,33 @@ namespace ConsoleUI
             Render();
         }
 
-        public void ChangeColor(ConsoleColor ForegroundColor=ConsoleColor.White, ConsoleColor BackgroundColor=ConsoleColor.Black)
+        public void ChangeColor(ConsoleColor ForegroundColor, ConsoleColor BackgroundColor)
 		{
-			this.foregroundcolor = ForegroundColor;
-			this.backgroundcolor = BackgroundColor;	
-			Render();
+            foregroundcolor = ForegroundColor;
+            backgroundcolor = BackgroundColor;
+            Render();
 		}
+        public void ChangeColor(ConsoleColor ForegroundColor)
+		{
+            foregroundcolor = ForegroundColor;
+            backgroundcolor = backgroundcolor;
+            Render();
+		}
+        public void ChangeColor()
+		{
+            foregroundcolor = foregroundcolor;
+            backgroundcolor = ConsoleColor.Black;
+            Render();
+		}
+
 
 
         // IRenderable
         public void Render()
         {
+            foregroundcolor = foregroundcolor;
+            backgroundcolor = backgroundcolor;
             Clear();
-
             // --------------
 			//  
 			// --------------
@@ -122,16 +136,16 @@ namespace ConsoleUI
         public void OnHover()
 		{
 			Console.SetCursorPosition(position.x, position.y);
-			backgroundcolor = ConsoleColor.White;
-			foregroundcolor = ConsoleColor.Black;
+			Console.BackgroundColor = ConsoleColor.White;
+			Console.ForegroundColor = ConsoleColor.Black;
 			Console.Write("#");
             Console.SetCursorPosition(position.x + text.Length + 1, position.y);
             Console.Write("#");
         }
         public void OnUnHover()
 		{
-			foregroundcolor = ConsoleColor.Black;
-			backgroundcolor = ConsoleColor.DarkGray;
+			Console.ForegroundColor = foregroundcolor;
+			Console.BackgroundColor = backgroundcolor;
             Console.SetCursorPosition(position.x, position.y);
             Console.Write("#");
             Console.SetCursorPosition(position.x + text.Length + 1, position.y);
@@ -139,7 +153,7 @@ namespace ConsoleUI
         }
 		public void OnClick()
 		{
-			ChangeColor(ConsoleColor.White, ConsoleColor.DarkGray);
+			ChangeColor(foregroundcolor, ConsoleColor.DarkGray);
             Render();
 			_isFocused = true;
             OnClickEvent?.Invoke(this, EventArgs.Empty);

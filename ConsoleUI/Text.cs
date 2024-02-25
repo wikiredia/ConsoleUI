@@ -20,6 +20,38 @@ namespace ConsoleUI
         public Vector2 position { get; private set; }
         public bool hasBorder { get; private set; }
 
+        private ConsoleColor _bgcolor { get; set; } = ConsoleColor.Black;
+        private ConsoleColor _fgcolor { get; set; } = ConsoleColor.White;
+
+        public ConsoleColor foregroundcolor
+        {
+            get
+            {
+                return _fgcolor;
+            }
+
+            set
+            {
+                _fgcolor = value;
+                Console.ForegroundColor = _fgcolor;
+            }
+        }
+
+        public ConsoleColor backgroundcolor
+        {
+            get
+            {
+                return _bgcolor;
+            }
+
+            set
+            {
+                _bgcolor = value;
+                Console.BackgroundColor = _bgcolor;
+            }
+        }
+
+
         public Text(string text, Vector2 position, bool hasBorder=false)
         {
             this.hasBorder = hasBorder;
@@ -99,8 +131,8 @@ namespace ConsoleUI
 
         public void ChangeColor(ConsoleColor ForegroundColor=ConsoleColor.White, ConsoleColor BackgroundColor=ConsoleColor.Black)
         {
-            Console.ForegroundColor = ForegroundColor;
-            Console.BackgroundColor = BackgroundColor;
+            foregroundcolor = ForegroundColor;
+            backgroundcolor = BackgroundColor;
             Render();
             Console.ResetColor();
         }
@@ -117,6 +149,8 @@ namespace ConsoleUI
         }
         public void Render()
         {
+            foregroundcolor = foregroundcolor;
+            backgroundcolor = backgroundcolor;
             Clear();
             Console.SetCursorPosition(position.x, position.y);
             Console.Write(text);

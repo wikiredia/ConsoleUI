@@ -51,7 +51,7 @@ namespace ConsoleUI
 					User loggedInUser = User.Get(usernameField.text, passwordField.text);
 					debugTxt.ChangeText($"Succesful login, welcome {loggedInUser.FirstName}!");
 					Thread.Sleep(1000);
-					HomeScreen(loggedInUser);
+					HomeScreen(User.Get(usernameField.text, passwordField.text));
 				} else
 				{
 					debugTxt.ChangeText("Username or Password Incorrect");
@@ -148,20 +148,33 @@ namespace ConsoleUI
 		public static void HomeScreen(User user)
 		{
 			InstantiateNewWindow();
-
+			User.Save();
 			Text titleTxt = new Text($" Welcome, {user.FirstName}! ", new Vector2(2, 1), true);
-
-			Text balanceTxt = new Text($"Balance: {user.Balance:C2}", new Vector2(1, 4));
-			balanceTxt.ChangeColor(user.Balance >= 0 ? ConsoleColor.Green : ConsoleColor.Red);
-
+			Text debugTxt = new Text($"{User.RegisteredUsers[0].HasBankAccount}", new Vector2(100, 29));
 			Button accountSettingsBtn = new Button("Account Settings", new Vector2(100, 1));
 			accountSettingsBtn.OnClickEvent += (bsender, args) => { AccountSettings(); };
 
-			Button depositBtn = new Button("Deposit", new Vector2(1, 10));
-			depositBtn.ChangeColor(ConsoleColor.Green);
+			if(user.HasBankAccount)
+			{
+				Text balanceTxt = new Text($"Balance: {user.PersonalBankAccount?.Balance:F2}$", new Vector2(1, 4));
+				balanceTxt.ChangeColor(user.PersonalBankAccount?.Balance >= 0 ? ConsoleColor.Green : ConsoleColor.Red);
 
-			Button withdrawBtn = new Button("Withdraw", new Vector2(14, 10));
-			withdrawBtn.ChangeColor(ConsoleColor.Red);
+				Button depositBtn = new Button("Deposit", new Vector2(1, 10));
+				depositBtn.ChangeColor(ConsoleColor.Green);
+				depositBtn.OnClickEvent += (bsender, args) => { Deposit(); };
+
+				Button withdrawBtn = new Button("Withdraw", new Vector2(14, 10));
+				withdrawBtn.ChangeColor(ConsoleColor.Red);
+				withdrawBtn.OnClickEvent += (bsender, args) => { Withdraw(); };
+			} else
+			{
+				Button openAccountBtn = new Button("Open Bank Account", new Vector2(1, 4));
+				openAccountBtn.ChangeColor(ConsoleColor.Green);
+				openAccountBtn.OnClickEvent += (bsender, args) => { user.OpenBankAccount(); HomeScreen(user); };
+			}
+
+			Button saveChangesBtn = new Button("Save Changes", new Vector2(1, 28));
+			saveChangesBtn.OnClickEvent += (bsender, args) => { User.Save(); };
 
 			void AccountSettings()
 			{
@@ -173,11 +186,78 @@ namespace ConsoleUI
 				Text usernameTxt = new Text($"Username: {user.Username}", new Vector2(1, 7));
 				Text passwordTxt = new Text($"Password: {user.Password}", new Vector2(1, 8));
 				Text birthdayTxt = new Text($"Birthday: {user.BirthDate.ToString("dd-MM-yyyy")} | Age: {user.Age}", new Vector2(1, 10));
-
+				string hasAccount = user.HasBankAccount ? Convert.ToString(user.PersonalBankAccount?.Balance) + "$" : "Please open a bank account!";
+				Text accountBalanceTxt = new Text($"Bank Account Balance: {hasAccount}", new Vector2(1, 13));
                 Button backBtn = new Button("Back Home", new Vector2(107, 1));
                 backBtn.OnClickEvent += (bsender, args) => { HomeScreen(user); };
 
             }
+
+			void Deposit()
+			{
+				ImportantFunctions.InstantiateNewWindow();				
+
+				int depositAmount = 0;
+
+				Text depositTxt = new Text("How much money would you like to deposit? ", new Vector2(1, 1));
+				depositTxt.ChangeColor(ConsoleColor.Green);
+				Button plusBtn = new Button("+", new Vector2(1, 4));
+				plusBtn.ChangeColor(ConsoleColor.Green);
+
+				Text Price = new Text($"{depositAmount:F2}$", new Vector2(7, 4));
+
+				Button minusBtn = new Button("-", new Vector2(20, 4));
+				minusBtn.ChangeColor(ConsoleColor.Red);
+
+				Button depositConfirmBtn = new Button("Deposit", new Vector2(1, 8));
+				depositConfirmBtn.ChangeColor(ConsoleColor.Green);
+
+				Button cancelButton = new Button("Cancel", new Vector2(14, 8));
+				cancelButton.ChangeColor(ConsoleColor.Gray);
+
+				minusBtn.OnClickEvent += (bsender, args) => { depositAmount-=10; ChangePrice(); };
+				plusBtn.OnClickEvent += (bsender, args) => { depositAmount+=10; ChangePrice(); };
+				depositConfirmBtn.OnClickEvent += (bsender, args) => { user.PersonalBankAccount?.Deposit(depositAmount); HomeScreen(user); };
+				cancelButton.OnClickEvent += (bsender, args) => { HomeScreen(user); };
+
+				void ChangePrice()
+				{
+					Price.ChangeText($"{depositAmount:F2}$");
+				}
+			}
+
+			void Withdraw()
+			{
+				ImportantFunctions.InstantiateNewWindow();
+
+				int withdrawAmount = 0;
+
+				Text withdrawTxt = new Text("How much money would you like to withdraw?", new Vector2(1, 1));
+				withdrawTxt.ChangeColor(ConsoleColor.Red);
+				Button plusBtn = new Button("+", new Vector2(1, 4));
+				plusBtn.ChangeColor(ConsoleColor.Green);
+
+				Text Price = new Text($"{withdrawAmount:F2}$", new Vector2(7, 4));
+
+				Button minusBtn = new Button("-", new Vector2(20, 4));
+				minusBtn.ChangeColor(ConsoleColor.Red);
+
+				Button withdrawConfirmBtn = new Button("Withdraw", new Vector2(1, 8));
+				withdrawConfirmBtn.ChangeColor(ConsoleColor.Red);
+
+				Button cancelButton = new Button("Cancel", new Vector2(14, 8));
+				cancelButton.ChangeColor(ConsoleColor.Gray);
+
+				minusBtn.OnClickEvent += (bsender, args) => { withdrawAmount-=10; ChangePrice(); };
+				plusBtn.OnClickEvent += (bsender, args) => { withdrawAmount+=10; ChangePrice(); };
+				withdrawConfirmBtn.OnClickEvent += (bsender, args) => { user.PersonalBankAccount.Withdraw(withdrawAmount); HomeScreen(user); };
+				cancelButton.OnClickEvent += (bsender, args) => { HomeScreen(user); };
+
+				void ChangePrice()
+				{
+					Price.ChangeText($"{withdrawAmount:F2}$");
+				}
+			}
         }
 	}
 }

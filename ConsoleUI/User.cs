@@ -24,6 +24,15 @@ namespace ConsoleUI
 
 		public static List<User> RegisteredUsers { get; set; } = new List<User>();
 
+		public BankAccount PersonalBankAccount { get; private set; } = null;
+		public bool HasBankAccount
+		{
+			get
+			{
+				return PersonalBankAccount != null;
+			}
+		}
+
 		// Full Properties
 		public int Age
 		{
@@ -32,16 +41,6 @@ namespace ConsoleUI
 				return (DateTime.Now - BirthDate).Days / 365;
 			}
 		}
-
-		private double _balance { get; set; }
-		public double Balance
-		{
-			get
-			{
-				return _balance;
-			}
-		}
-
 
 		public User(string firstname, string lastname, string username, string password)
 		{
@@ -73,6 +72,7 @@ namespace ConsoleUI
 			
 			return necessaryUser;
 		}
+
 		public static bool Exists(string username)
 		{
 			bool exists = false;
@@ -85,6 +85,15 @@ namespace ConsoleUI
 				}
 			}
 			return exists;
+		}
+		
+		public void OpenBankAccount()
+		{
+			PersonalBankAccount = new BankAccount();
+		}
+		public void CloseBankAccount()
+		{
+			PersonalBankAccount = null;
 		}
 
 		public static void Save()
