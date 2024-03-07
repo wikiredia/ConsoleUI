@@ -29,20 +29,23 @@ namespace ConsoleUI
 		{
 			string debugMessage = "";
 			InstantiateNewWindow();
-            Text titleTxt = new Text($"     CS50X Hospital     ", new Vector2(49, 2), true);
-            
-            InputField usernameField = new InputField("Username", new Vector2(48, 8), "Enter your username...");
+			Text titleTxt = new Text($"     CS50X Hospital     ", new Vector2(49, 2), true);
+
+			InputField usernameField = new InputField("Username", new Vector2(48, 8), "Enter your username...");
 			InputField passwordField = new InputField("Password", new Vector2(48, 13), "Enter your password...");
-            passwordField.isPasswordField = true;
+			passwordField.isPasswordField = true;
 
 			Text debugTxt = new Text(debugMessage, new Vector2(0, 29));
-			
+
 			Button signinBtn = new Button("Sign In", new Vector2(48, 18));
-            signinBtn.OnClickEvent += (bsender, args) => { SignIn(); };
+			signinBtn.OnClickEvent += (bsender, args) => { SignIn(); };
 			Button signupBtn = new Button("Sign Up", new Vector2(63, 18));
 			signupBtn.OnClickEvent += ImportantFunctions.SignUp;
 
-			void SignIn()
+			Button debugBtn = new Button("Debug", new Vector2(50, 22));
+			debugBtn.OnClickEvent += (bsender, args) => { debugTxt.ChangeText($"{User.Get(usernameField.text, passwordField.text).HasBankAccount}"); };
+
+            void SignIn()
 			{
 				debugMessage = "";
 
@@ -51,7 +54,7 @@ namespace ConsoleUI
 					User loggedInUser = User.Get(usernameField.text, passwordField.text);
 					debugTxt.ChangeText($"Succesful login, welcome {loggedInUser.FirstName}!");
 					Thread.Sleep(1000);
-					HomeScreen(User.Get(usernameField.text, passwordField.text));
+					HomeScreen(loggedInUser);
 				} else
 				{
 					debugTxt.ChangeText("Username or Password Incorrect");
@@ -148,16 +151,18 @@ namespace ConsoleUI
 		public static void HomeScreen(User user)
 		{
 			InstantiateNewWindow();
-			User.Save();
 			Text titleTxt = new Text($" Welcome, {user.FirstName}! ", new Vector2(2, 1), true);
-			Text debugTxt = new Text($"{User.RegisteredUsers[0].HasBankAccount}", new Vector2(100, 29));
+			Text debugTxt = new Text($"{User.Get(user.Username, user.Password).PersonalBankAccount==null}", new Vector2(50, 10));
 			Button accountSettingsBtn = new Button("Account Settings", new Vector2(100, 1));
 			accountSettingsBtn.OnClickEvent += (bsender, args) => { AccountSettings(); };
+            
+			Button logOutBtn = new Button("Log Out", new Vector2(109, 28));
+            logOutBtn.OnClickEvent += (bsender, args) => { LoginScreen(); };
 
-			if(user.HasBankAccount)
+            if (user.HasBankAccount)
 			{
-				Text balanceTxt = new Text($"Balance: {user.PersonalBankAccount?.Balance:F2}$", new Vector2(1, 4));
-				balanceTxt.ChangeColor(user.PersonalBankAccount?.Balance >= 0 ? ConsoleColor.Green : ConsoleColor.Red);
+				Text balanceTxt = new Text($"Balance: {user.PersonalBankAccount.Balance:F2}$", new Vector2(1, 4));
+				balanceTxt.ChangeColor(user.PersonalBankAccount.Balance >= 0 ? ConsoleColor.Green : ConsoleColor.Red);
 
 				Button depositBtn = new Button("Deposit", new Vector2(1, 10));
 				depositBtn.ChangeColor(ConsoleColor.Green);
@@ -176,6 +181,9 @@ namespace ConsoleUI
 			Button saveChangesBtn = new Button("Save Changes", new Vector2(1, 28));
 			saveChangesBtn.OnClickEvent += (bsender, args) => { User.Save(); };
 
+			Button loadChangesBtn = new Button("Load Changes", new Vector2(20, 28));
+			loadChangesBtn.OnClickEvent += (bsender, args) => { User.LoadData(); HomeScreen(user); };
+
 			void AccountSettings()
 			{
 				InstantiateNewWindow();
@@ -186,7 +194,7 @@ namespace ConsoleUI
 				Text usernameTxt = new Text($"Username: {user.Username}", new Vector2(1, 7));
 				Text passwordTxt = new Text($"Password: {user.Password}", new Vector2(1, 8));
 				Text birthdayTxt = new Text($"Birthday: {user.BirthDate.ToString("dd-MM-yyyy")} | Age: {user.Age}", new Vector2(1, 10));
-				string hasAccount = user.HasBankAccount ? Convert.ToString(user.PersonalBankAccount?.Balance) + "$" : "Please open a bank account!";
+				string hasAccount = user.HasBankAccount ? Convert.ToString(user.PersonalBankAccount.Balance) + "$" : "Please open a bank account!";
 				Text accountBalanceTxt = new Text($"Bank Account Balance: {hasAccount}", new Vector2(1, 13));
                 Button backBtn = new Button("Back Home", new Vector2(107, 1));
                 backBtn.OnClickEvent += (bsender, args) => { HomeScreen(user); };
@@ -217,7 +225,7 @@ namespace ConsoleUI
 
 				minusBtn.OnClickEvent += (bsender, args) => { depositAmount-=10; ChangePrice(); };
 				plusBtn.OnClickEvent += (bsender, args) => { depositAmount+=10; ChangePrice(); };
-				depositConfirmBtn.OnClickEvent += (bsender, args) => { user.PersonalBankAccount?.Deposit(depositAmount); HomeScreen(user); };
+				depositConfirmBtn.OnClickEvent += (bsender, args) => { user.PersonalBankAccount.Deposit(depositAmount); HomeScreen(user); };
 				cancelButton.OnClickEvent += (bsender, args) => { HomeScreen(user); };
 
 				void ChangePrice()

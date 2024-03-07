@@ -7,7 +7,6 @@ using System.IO;
 using Newtonsoft.Json;
 using System.CodeDom;
 
-
 namespace ConsoleUI
 {
 	public class User
@@ -24,7 +23,7 @@ namespace ConsoleUI
 
 		public static List<User> RegisteredUsers { get; set; } = new List<User>();
 
-		public BankAccount PersonalBankAccount { get; private set; } = null;
+		public BankAccount PersonalBankAccount { get; private set; }
 		public bool HasBankAccount
 		{
 			get
@@ -89,7 +88,7 @@ namespace ConsoleUI
 		
 		public void OpenBankAccount()
 		{
-			PersonalBankAccount = new BankAccount();
+			PersonalBankAccount = new BankAccount(this);
 		}
 		public void CloseBankAccount()
 		{

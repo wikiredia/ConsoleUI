@@ -17,10 +17,12 @@ namespace ConsoleUI
 			}
 		}
 		public string IBAN { get; private set; }
+		public User AccountHolder { get; private set; }
 
-		public BankAccount()
+		public BankAccount(User AccountHolder)
 		{
 			IBAN = GenerateIBAN();
+			this.AccountHolder = AccountHolder;
 		}
 
 		public void Deposit(double amount)
